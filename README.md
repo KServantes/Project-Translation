@@ -1,1 +1,1 @@
-Translation pics for YGOPRO
+Translation english to spanish of pics for YGOPRO 
