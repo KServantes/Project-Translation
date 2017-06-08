@@ -1,0 +1,1 @@
+Translation pics for YGOPRO
