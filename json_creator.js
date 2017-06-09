@@ -12,7 +12,7 @@ db.serialize(function(){
 	var dw = "";
 	var dh = "";
 
-	db.each('SELECT id, english_name, spanish_name, card_type, url, pendulum_scale, type, attribute, level, rank, property, card_description_me, card_description_pe, set_card, atk_def_link FROM cartas WHERE link_markers = "" or spanish_name = ""', function(err, row) {
+	db.each('SELECT id, english_name, spanish_name, card_type, url, pendulum_scale, type, attribute, level, rank, property, card_description_me, card_description_pe, set_card, atk_def_link FROM cartas WHERE link_markers = "" and spanish_name != ""', function(err, row) {
 		var id = "";
 		
 		/*console.log(row.id);*/

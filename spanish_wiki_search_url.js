@@ -6,7 +6,7 @@ var db = new sqlite3.Database('cards.cdb');
 var check;
 db.serialize(function() {
 
-  db.each("SELECT id, english_name, jap_name, set_card FROM cartas", function(err, row) {
+  db.each("SELECT id, english_name, jap_name, set_card FROM cartas ", function(err, row) {
   
   /*console.log(row.id + " " + row.jap_name);*/
   var search = "";
