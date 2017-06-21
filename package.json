@@ -1,17 +1,32 @@
 {
-  "name": "busqueda",
+  "name": "Project-Translation",
   "version": "1.0.0",
-  "description": "Obtener data de la wiki de yugioh",
-  "main": "index.js",
+  "description": "Translation english to spanish of pics for YGOPRO",
+  "main": "english_wiki_search.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.1",
+    "check-dependencies": "^1.0.1",
+    "express": "^4.15.3",
+    "image-downloader": "^3.2.2",
+    "image-size": "^0.5.4",
+    "request": "^2.81.0",
+    "sqlite3": "^3.1.8",
+    "xmldom": "^0.1.27",
+    "xpath": "^0.0.24"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Ricardo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/megazordranger/Project-Translation.git"
+  },
+  "keywords": [],
+  "author": "",
   "license": "ISC",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.1",
-    "image-downloader": "^3.2.2",
-    "image-size": "^0.5.4",
-    "request": "^2.81.0"
-  }
+  "bugs": {
+    "url": "https://github.com/megazordranger/Project-Translation/issues"
+  },
+  "homepage": "https://github.com/megazordranger/Project-Translation#readme"
 }
