@@ -10,7 +10,7 @@ db.serialize(function() {
   
   /*console.log(row.url);*/
   
-request(row.url, function(error, response, body) {
+request.get({ url: row.url, timeout: 600000}, function(error, response, body) {
   if(error) {
     console.log("Error: " + error);
   }

@@ -4,21 +4,25 @@ var fs = require('fs');
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('cards.cdb');
 var check;
-db.serialize(function() {
+db.serialize(function(){
 
-  db.run("CREATE TABLE if not exists cartas(id TEXT PRIMARY KEY, english_name TEXT, spanish_name TEXT, jap_name TEXT, card_type TEXT, attribute TEXT, type TEXT, level TEXT, rank TEXT, pendulum_scale TEXT, property TEXT, link_markers TEXT, atk_def_link TEXT, card_description_me TEXT, card_description_pe TEXT, url TEXT, image_url TEXT, set_card TEXT, variants TEXT, render TEXT)");
+  db.run("CREATE TABLE if not exists cartas(id TEXT PRIMARY KEY, english_name TEXT, spanish_name TEXT, jap_name TEXT, card_type TEXT, attribute TEXT, type TEXT, level TEXT, rank TEXT, pendulum_scale TEXT, property TEXT, link_markers TEXT, atk_def_link TEXT, card_description_me TEXT, card_description_pe TEXT, url TEXT, image_url TEXT, set_card TEXT, variants TEXT, bash TEXT,render TEXT)");
   
-  db.each("SELECT id, name FROM texts", function(err, row) {
   
+  db.each("SELECT id, name FROM texts WHERE id NOT IN (SELECT id FROM cartas) LIMIT 0,100", function(err, row) {
+   
   /*console.log(row.id + " " + row.name);*/
-      
-request("http://yugioh.wikia.com/wiki/" + row.name, function(error, response, body) {
+        
+request.get({ url: "http://yugioh.wikia.com/wiki/" + encodeURIComponent(row.name), timeout: 600000}, function(error, response, body) {
   if(error) {
     console.log("Error: " + error);
   }
   console.log("Status code: " + response.statusCode);
-
+  console.log(row.id);
+  
   var $ = cheerio.load(body);
+  
+  
   
   $('tbody:has(th.cardtable-header)').each(function( index ) {
       
@@ -35,21 +39,19 @@ request("http://yugioh.wikia.com/wiki/" + row.name, function(error, response, bo
 
 	
 	var property_list = [
-		['Normal  Trap'],
-		['Continuous  Trap'],
+		['Normal Trap'],
+		['Continuous Trap'],
 		['Counter Trap'],
-		['Spell'],
+		['Normal Spell'],
 		['Continuous Spell'],
-		['Equip Spel'],
+		['Equip Spell'],
 		['Quick-Play Spell'],
 		['Field Spell'],
 		['Ritual Spell']
 	];
 	var property = "";
-	for(var i; i < property_list.length; i++){
-	
+	for(var i=0; i < property_list.length; i++){
 		property += $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Property"]) > td.cardtablerowdata > a[title="' + property_list[i] + ' Card"]').text().trim();
-	
 	};
 	
 	var passcode = $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Passcode"]) > td.cardtablerowdata > a').remove();
