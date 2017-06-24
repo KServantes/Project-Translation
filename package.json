@@ -2,7 +2,7 @@
   "name": "Project-Translation",
   "version": "1.0.0",
   "description": "Translation english to spanish of pics for YGOPRO",
-  "main": "english_wiki_search.js",
+  "main": "server.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.1",
     "check-dependencies": "^1.0.1",
@@ -16,7 +16,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node servidor.js"
   },
   "repository": {
     "type": "git",
@@ -28,5 +29,7 @@
   "bugs": {
     "url": "https://github.com/megazordranger/Project-Translation/issues"
   },
-  "homepage": "https://github.com/megazordranger/Project-Translation#readme"
+  "engines": {
+    "node": "4.1.1"
+  }
 }
