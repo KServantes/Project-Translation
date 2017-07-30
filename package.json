@@ -4,20 +4,21 @@
   "description": "Translation english to spanish of pics for YGOPRO",
   "main": "server.js",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.1",
     "check-dependencies": "^1.0.1",
+    "cheerio": "^1.0.0-rc.1",
     "express": "^4.15.3",
     "image-downloader": "^3.2.2",
     "image-size": "^0.5.4",
     "request": "^2.81.0",
     "sqlite3": "^3.1.8",
+    "url-exists": "^1.0.3",
     "xmldom": "^0.1.27",
     "xpath": "^0.0.24"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-	"start": "node servidor.js"
+    "start": "node servidor.js"
   },
   "repository": {
     "type": "git",

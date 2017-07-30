@@ -8,7 +8,7 @@ var check;
 
 db.serialize(function() {
 
-	db.each("SELECT id, english_name, jap_name, set_card FROM cartas WHERE url IS NULL LIMIT 0,100", function(err, row) {
+	db.each("SELECT id, english_name, jap_name, set_card FROM cartas WHERE spanish_name IS NULL LIMIT 0,100", function(err, row) {
 		/*console.log(row.id + " " + row.jap_name);*/
 		var search = "";
 		if(row.jap_name == ""){
@@ -26,15 +26,20 @@ db.serialize(function() {
 			/*console.log(encodeURIComponent(search));*/
 			var $ = cheerio.load(body);
 			var url = "";
+			
+			var stmt = db.prepare("UPDATE cartas SET bash = ?  WHERE id=?;");
+			/* stmt.run(10, row.id); */
+			
 			$('ul.Results').each(function( index ) {
 				var spanish_name = $(this).find('a.result-link[data-pos="1"]').first().text().trim();
 				url = $(this).find('a.result-link[data-pos="1"]').last().text().trim();
 				stmt = db.prepare("UPDATE cartas SET spanish_name = ?, url = ?  WHERE id=?;");
 				stmt.run(spanish_name, url, row.id);
+				
+				
 			});
 			if(url == ""){
-				stmt = db.prepare("UPDATE cartas SET url = ?  WHERE id=?;");
-				stmt.run(1, row.id);
+				
 			}       
 		});
 	});

@@ -6,29 +6,27 @@ var db = new sqlite3.Database('cards.cdb');
 var sizeOf = require('image-size');
 var check;
 
-
-module.exports = function (callback) {
-
 fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , function (error) {
 	if (error) { 
 		console.log("Error: " + error); 
 	}
 
 	db.serialize(function(){
-		var linea_final = 0;
+		
 
 		var dw = "";
 		var dh = "";
 
-		db.each('SELECT id, english_name, spanish_name, card_type, url, pendulum_scale, type, attribute, level, rank, property, card_description_me, card_description_pe, set_card, atk_def_link FROM cartas WHERE link_markers = "" AND spanish_name != "" AND bash = 1', function(err, row) {
+		db.each('SELECT id, english_name, spanish_name, card_type, url, pendulum_scale, type, attribute, level, rank, property, card_description_me, card_description_pe, set_card, atk_def_link, card_effect_types FROM cartas WHERE image_url IS NOT NULL AND bash is not null AND type NOT LIKE "%Link%" AND render = "SC" LIMIT 0,300', function(err, row) {
 			var id = "";
-		
-			/*console.log(row.id);*/
-		
-			if (fs.existsSync('./img/' + row.id + '.jpg')) {
 			
 			
-				var dimensions = sizeOf('./img/' + row.id + '.jpg');
+		
+			if (fs.existsSync('img/' + row.id + '.jpg')) {
+			
+				console.log(row.id);
+			
+				var dimensions = sizeOf('img/' + row.id + '.jpg');
 				dw = dimensions.width;
 				dh = dimensions.height;
 			
@@ -47,6 +45,9 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 				if(row.card_type == "Monster"){ 
 					if(row.pendulum_scale == ""){
 						background = 0;
+						
+						if(row.card_effect_types){ background = 2; };
+						
 						for(var i=0; i < items.length; i++){
 							if(row.type.search(items[i][0])!= -1){ background = items[i][1]; };
 						};
@@ -57,6 +58,8 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 						};
 					};
 				};
+			
+				
 			
 				/*console.log(row.card_type);	
 				console.log(row.type);
@@ -84,9 +87,15 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 				for(var i=0; i < attribute_list.length; i++){
 					if(row.attribute.search(attribute_list[i][0]) != -1){ attribute = attribute_list[i][1]};
 				};
+				
+				if(row.attribute.indexOf("?") >= 0) { attribute = 4 };
+				/*if(row.attribute.search(/\?/g) != -1){ attribute = 4};*/
+			
+				/*console.log(attribute);*/
 			
 				var level_rank = row.level + row.rank;
 				if(level_rank == ""){level_rank = 0;};
+				if(level_rank == "?"){level_rank = 0;};
 				
 				var icon = 0;
 				var icon_list = [
@@ -104,23 +113,38 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 				};
 			
 				var text_me = row.card_description_me;
-				text_me = text_me.replace('Esta carta puede ser usada como una "Ficha', 'Invocado Especialmente por el efecto de "');
-				text_me = text_me.replace("* Si se usa como otra Ficha, aplica el Tipo/Atributo/Nivel/ATK/DEF de esa Ficha.", "");
+				/*text_me = text_me.replace('Esta carta puede ser usada como una "Ficha', 'Invocado Especialmente por el efecto de "');
+				text_me = text_me.replace("* Si se usa como otra Ficha, aplica el Tipo/Atributo/Nivel/ATK/DEF de esa Ficha.", "");*/
+				
+				text_me = text_me.replace(/\\/g,"\\\\");
+				text_me = text_me.replace(/\//g, '\\/');
 				text_me = text_me.replace(/"/g, '\\"');
-				var text_pe = row.card_description_pe.replace(/"/g, '\\"');
+				
+				if(row.card_description_pe != null){ 
+					
+					var text_pe = row.card_description_pe;
+					text_pe = text_pe.replace(/\\/g,"\\\\");
+					text_pe = text_pe.replace(/\//g, '\\/');
+					text_pe = text_pe.replace(/"/g, '\\"'); 
+				
+				};
 			
+				row.spanish_name = row.spanish_name.replace(/\\/g,"\\\\");
+				row.spanish_name = row.spanish_name.replace(/\//g, '\\/');
 				row.spanish_name = row.spanish_name.replace(/"/g, '\\"');
-				row.spanish_name = row.spanish_name.replace("*", "");
+				row.spanish_name = row.spanish_name.replace(" *", "").replace("*", "");
 			
 				var type_list =[
+					/* Monster Arquetype */
 					["Aqua", "Aqua"],
-					["Beast", "Bestia"],
+					["Beast-Warrior", "Guerrero-Bestia"],
+					["Divine-Beast", "Bestia divina"],
 					["Winged Beast", "Bestia Alada"],
+					["Beast", "Bestia"],
 					["Fiend", "Demonio"],
 					["Dinosaur", "Dinosaurio"],
 					["Dragon", "Dragón"],
 					["Warrior", "Guerrero"],
-					["Beast-Warrior", "Guerrero-Bestia"],
 					["Fairy", "Hada"],
 					["Insect", "Insecto"],
 					["Spellcaster", "Lanzador de Conjuros"],
@@ -135,9 +159,10 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 					["Thunder", "Trueno"],
 					["Wyrm", "Wyrm"],
 					["Zombie", "Zombi"],
-					["Divine-Beast", "Bestia divina"],
 					["Creator God", "Dios creador"],
-					["Cyverse", "Ciberso"],
+					["Cyberse", "Ciberso"],
+		
+					/* Monster Type */
 					["Fusion", "Fusión"],
 					["Ritual", "Ritual"],
 					["Synchro", "Síncronia"],
@@ -146,25 +171,45 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 					["Pendulum", "Péndulo"],
 					["Link", "Enlace"],
 					["Effect", "Efecto"],
+					["Normal", "Normal"],
+					
+					/* Monster Subtype (Ability)*/
+					["Tuner", "Cantante"],
+					["Toon", "Toon"],
+					["Union", "Unión"],
+					["Spirit", "Spirit"],
+					["Gemini", "Géminis"],
+					["Flip", "Volteo"],
+					
+					/* Format Style */
+					['?', '?'],
 					[' / ', '","']
 				];
 			
 				for(var i=0; i < type_list.length; i++){
-					if(row.type.search(type_list[i][0]) != -1){ row.type = row.type.replace(type_list[i][0],type_list[i][1]);};
+					if(row.type.indexOf(type_list[i][0]) >= 0){ row.type = row.type.replace(type_list[i][0],type_list[i][1]);};
 				};
+				
+				/*row.type = row.type.replace("?","???");
+				console.log(row.type);*/
 			
 				var atk_def_link = row.atk_def_link.replace(' / ', '","def":"');
 			
 				if(atk_def_link == ""){ atk_def_link = '0","def":"0';};
 			
 				if(row.pendulum_scale == ""){ row.pendulum_scale = 0;}; 
+				
+				/*var directory_img = require('path').basename(__dirname);
+				var directory_img = require('path').basename(__filename);*/
+				
+				var directory_img = require('path').resolve(__dirname).replace(/\\/g,"\\\\") + "\\\\img\\\\";
 			
 				var stmt = db.prepare("UPDATE cartas SET bash = ? WHERE id = ?;");
-				stmt.run(2, row.id);
+				stmt.run('1-SC', row.id);
 			
 				fs.appendFileSync('cartas_es.tcgb', 
 					'"' + row.spanish_name + '":{' +
-					'"artwork":"C:' + '\\' + '\\Users' + '\\' + '\\Yecenia' + '\\' + '\\Desktop' + '\\' + '\\imagenes' + '\\' + '\\' + row.id + '.jpg",' +
+					'"artwork":"' + directory_img + row.id + '.jpg",' +
 					'"artwork_crop":[0,0,' + dw + ',' + dh + '],' +
 					'"background":' + background + ',' +
 					'"rarity":0,' +
@@ -180,21 +225,14 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 					'"set":"' + row.set_card + '",' +
 					'"card_number":"' + row.id + '",' +
 					'"limitation":"",' +
-					'"sticker":1,' +
+					'"sticker":2,' +
 					'"copyright":1},' +
 					'\n' 
 				);
 			};
-		
-			if(linea_final == 0 ){
-				linea_final = 1;
-				fs.appendFile('cartas_es.tcgb', '"":{"artwork":"","artwork_crop":[0,0,0,0],"background":0,"rarity":0,"attribute":0,"level":0,"icon":0,"description":"","pendulum_description":"","pendulum_scales":[0,0],"subtypes":[],"atk":"0","def":"0","edition":0,"set":"","card_number":"","limitation":"","sticker":0,"copyright":0}}}', function (error) {
-					if (error) { console.log("Error: " + error); }
-				});
-			};
 		});	
-	
 	});
 });
 
-};
+
+
