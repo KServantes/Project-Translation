@@ -15,7 +15,7 @@ db.serialize(function() {
 	
 		if (fs.existsSync('./img/' + row.id + '.jpg')){
 			stmt = db.prepare("UPDATE cartas SET image_url = ? WHERE id = ?;");
-			stmt.run(2, row.id);
+			stmt.run(1, row.id);
 			/* console.log("yeah"); */
 		}else{
 			urlExists('https://raw.githubusercontent.com/moecube/ygopro-images/master/pics/' + row.id + '.jpg', function(err, exists) {

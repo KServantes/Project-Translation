@@ -7,7 +7,7 @@ var check;
 
 db.serialize(function() {
 
-	db.each("SELECT id, english_name, jap_name, url FROM cartas WHERE render = '600' AND type NOT LIKE '%Token%' LIMIT 0,100", function(err, row) {
+	db.each("SELECT id, english_name, jap_name, url FROM cartas WHERE card_description_me IS NULL AND url IS NOT NULL LIMIT 0,100", function(err, row) {
 		
 		var url2 = encodeURIComponent(row.url);
   
@@ -20,7 +20,7 @@ db.serialize(function() {
 			
 			if(response.statusCode == "404"){
 				var stmt = db.prepare("UPDATE cartas SET render = ? WHERE id = ?");
-				stmt.run(600, row.id);
+				stmt.run("not found", row.id);
 			}
 			
 			console.log(row.url);
@@ -59,7 +59,7 @@ db.serialize(function() {
 				
 				var english_name = $(this).find('#mw-content-text > div.infobox_border > div > aside > section:nth-child(2) > div:nth-child(3) > div > div > p > a > span').text().trim();
 				
-				var passcode = $(this).find('#mw-content-text > div.infobox_border > div > aside > section:nth-child(3) > div:nth-child(3) > div > div').text().trim();
+				/*var passcode = $(this).find('#mw-content-text > div.infobox_border > div > aside > section:nth-child(3) > div:nth-child(3) > div > div').text().trim();*/
 				
 				function save_name (){
 					/*console.log(set_card);*/

@@ -17,7 +17,7 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 		var dw = "";
 		var dh = "";
 
-		db.each('SELECT id, english_name, spanish_name, card_type, url, pendulum_scale, type, attribute, level, rank, property, card_description_me, card_description_pe, set_card, atk_def_link, card_effect_types FROM cartas WHERE image_url IS NOT NULL AND bash is not null AND type NOT LIKE "%Link%" AND render = "SC" LIMIT 0,300', function(err, row) {
+		db.each('SELECT id, english_name, spanish_name, card_type, url, pendulum_scale, type, attribute, level, rank, property, card_description_me, card_description_pe, set_card, atk_def_link, card_effect_types FROM cartas WHERE image_url IS NOT NULL  AND bash IS NULL AND type NOT LIKE "%Link%" LIMIT 0,100', function(err, row) {
 			var id = "";
 			
 			
@@ -135,7 +135,7 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 				row.spanish_name = row.spanish_name.replace(" *", "").replace("*", "");
 			
 				var type_list =[
-					/* Monster Arquetype */
+					/* Types */
 					["Aqua", "Aqua"],
 					["Beast-Warrior", "Guerrero-Bestia"],
 					["Divine-Beast", "Bestia divina"],
@@ -162,7 +162,7 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 					["Creator God", "Dios creador"],
 					["Cyberse", "Ciberso"],
 		
-					/* Monster Type */
+					/* Monster Card Types */
 					["Fusion", "Fusión"],
 					["Ritual", "Ritual"],
 					["Synchro", "Síncronia"],
@@ -173,7 +173,7 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 					["Effect", "Efecto"],
 					["Normal", "Normal"],
 					
-					/* Monster Subtype (Ability)*/
+					/* Abilities */
 					["Tuner", "Cantante"],
 					["Toon", "Toon"],
 					["Union", "Unión"],
@@ -205,7 +205,7 @@ fs.appendFile('cartas_es.tcgb', '{"game":1,"version":2,"cards":{' +  '\n' , func
 				var directory_img = require('path').resolve(__dirname).replace(/\\/g,"\\\\") + "\\\\img\\\\";
 			
 				var stmt = db.prepare("UPDATE cartas SET bash = ? WHERE id = ?;");
-				stmt.run('1-SC', row.id);
+				stmt.run('0', row.id);
 			
 				fs.appendFileSync('cartas_es.tcgb', 
 					'"' + row.spanish_name + '":{' +

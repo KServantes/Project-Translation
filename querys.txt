@@ -1,0 +1,112 @@
+ UPDATE table1 
+           SET status = (SELECT t2.status FROM table2 t2 WHERE t2.trans_id = id) , 
+               name = (SELECT t2.name FROM table2 t2 WHERE t2.trans_id = id)
+           WHERE id IN (SELECT trans_id FROM table2 t2 WHERE t2.trans_id= id)
+
+
+UPDATE texts 
+           SET name = (SELECT t2.spanish_name FROM cartas t2 WHERE t2.id = id) , 
+               [desc] = (SELECT t2.card_description_me FROM cartas t2 WHERE t2.id = id)
+           WHERE id IN (SELECT id FROM cartas t2 WHERE t2.id= id)
+
+
+replace into texts
+(name, [desc])
+select cartas.spanish_name, cartas.card_description_me
+from cartas
+inner join texts on cartas.id = texts.id;
+
+--Query para traducir la tabla texts
+UPDATE texts 
+SET name = (SELECT spanish_name FROM cartas WHERE id = texts.id) , 
+[desc] = (SELECT card_description_me FROM cartas WHERE id = texts.id)
+where id not in (select id from cartas where type LIKE '%Pendulum%')
+
+
+--Query para traducir las cartas péndulo con efecto péndulo en la tabla texts 
+UPDATE texts 
+SET name = (SELECT spanish_name FROM cartas WHERE id = texts.id) , 
+[desc] = (
+SELECT 'Escala de Péndulo = ' || pendulum_scale || '
+' || '[ Efecto de Péndulo ]' || '
+' || card_description_pe || '
+' || '----------------------------------------' || '
+' || '[ Texto de Carta ]' || '
+' || card_description_me
+FROM cartas WHERE id = texts.id
+)
+where id in (select id from cartas where type LIKE '%Pendulum%' AND card_description_pe != '')
+
+
+--Query para traducir las cartas péndulo sin efecto péndulo en la tabla texts 
+UPDATE texts 
+SET name = (SELECT spanish_name FROM cartas WHERE id = texts.id) , 
+[desc] = (
+SELECT 'Escala de Péndulo = ' || pendulum_scale || '
+' || '[ Efecto de Péndulo ]' || '
+' || '       Ninguno' || '
+' || '----------------------------------------' || '
+' || '[ Texto de Carta ]' || '
+' || card_description_me
+FROM cartas WHERE id = texts.id
+)
+where id in (select id from cartas where type LIKE '%Pendulum%' AND card_description_pe = '')
+
+
+			   
+--Query para actulizar la tabla cartas
+UPDATE cartas 
+SET id = (SELECT id FROM texts WHERE name = cartas.english_name)
+WHERE image_url IS NULL
+
+--Para ver sólo los registros duplicados.
+SELECT COUNT(*), spanish_name FROM cartas GROUP BY spanish_name HAVING (COUNT(*) > 1);
+
+--Visualizar los monstruos que no estan marcados como efecto o normales
+SELECT *
+FROM cartas
+WHERE card_type = 'Monster'
+AND type NOT LIKE '%Normal%'
+AND type NOT LIKE '%Fusion%'
+AND type NOT LIKE '%Ritual%'
+AND type NOT LIKE '%Synchro"%'
+AND type NOT LIKE '%Xyz%'
+AND type NOT LIKE '%Token%'
+AND type NOT LIKE '%Pendulum%'
+AND type NOT LIKE '%Link%'
+AND type NOT LIKE '%Effect%'
+
+--Query para ver las cartas con caracteres especiales en el nombre
+select *
+from cartas
+where spanish_name LIKE '%"%'
+OR spanish_name LIKE '%/%'
+OR spanish_name LIKE '%:%'
+OR spanish_name LIKE '%?%'
+
+--Query para retirar los asteriscos de los nombres 
+UPDATE texts
+SET name = replace( name, ' *', '' ) WHERE name LIKE '% *%';
+
+--Query para traducir los campos str
+UPDATE texts 
+SET 
+str1 = (SELECT str1 FROM textos WHERE name = texts.name),
+str2 = (SELECT str2 FROM textos WHERE name = texts.name),
+str3 = (SELECT str3 FROM textos WHERE name = texts.name),
+str4 = (SELECT str4 FROM textos WHERE name = texts.name),
+str5 = (SELECT str5 FROM textos WHERE name = texts.name),
+str6 = (SELECT str6 FROM textos WHERE name = texts.name),
+str7 = (SELECT str7 FROM textos WHERE name = texts.name),
+str8 = (SELECT str8 FROM textos WHERE name = texts.name),
+str9 = (SELECT str9 FROM textos WHERE name = texts.name),
+str10 = (SELECT str10 FROM textos WHERE name = texts.name),
+str11 = (SELECT str11 FROM textos WHERE name = texts.name),
+str12 = (SELECT str12 FROM textos WHERE name = texts.name),
+str13 = (SELECT str13 FROM textos WHERE name = texts.name),
+str14 = (SELECT str14 FROM textos WHERE name = texts.name),
+str15 = (SELECT str15 FROM textos WHERE name = texts.name),
+str16 = (SELECT str16 FROM textos WHERE name = texts.name),
+translated = '1'
+where name in (select name from textos)
+

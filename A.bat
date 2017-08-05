@@ -1,6 +1,6 @@
 : @echo off
 
-set Looping_number=200
+set Looping_number=100
 cd %CD%
 if not exist "\img\" mkdir img
 FOR /L %%A IN (1,1,%Looping_number%) DO call :doit %%A

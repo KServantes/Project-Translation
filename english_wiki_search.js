@@ -9,7 +9,7 @@ db.serialize(function(){
 
 	db.run("CREATE TABLE if not exists cartas(id TEXT PRIMARY KEY, english_name TEXT, spanish_name TEXT, jap_name TEXT, card_type TEXT, attribute TEXT, type TEXT, level TEXT, rank TEXT, pendulum_scale TEXT, property TEXT, link_markers TEXT, atk_def_link TEXT, card_description_me TEXT, card_description_pe TEXT, url TEXT, image_url TEXT, set_card TEXT, variants TEXT, bash TEXT,render TEXT)");
   
-	db.each("SELECT id, name FROM texts WHERE id NOT IN (SELECT id FROM cartas) LIMIT 0,100", function(err, row) {
+	db.each("SELECT id, name FROM texts WHERE id NOT IN (SELECT id FROM cartas) LIMIT 0,50", function(err, row) {
    
 		/*console.log(row.id + " " + row.name);*/
         
@@ -53,7 +53,7 @@ db.serialize(function(){
 					property += $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Property"]) > td.cardtablerowdata > a[title="' + property_list[i] + ' Card"]').text().trim();
 				};
 	
-				var passcode = $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Passcode"]) > td.cardtablerowdata > a').remove();
+				var passcode = $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Passcode"]) > td.cardtablerowdata > a').text().trim();
 				/*var spanish_card_description1 = $(this).find('td.navbox-list > span[lang="es"]').first().text().trim();*/
 				/*var spanish_card_description2 = $(this).find('td.cardtablespanrow:has(b:contains("Card descriptions")) > table.navbox.hlist > tbody > tr > td > span').text();*/
 				/*var spanish_card_description3 = $(this).find('table.collapsible.autocollapse.navbox-inner').text().trim();*/
@@ -71,6 +71,10 @@ db.serialize(function(){
 					rank += $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Rank"]) > td.cardtablerowdata > a[title="Rank ' + i + ' Monster Cards"]').text().trim();
 					pendulum_scale += $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Pendulum Scale"]) > td.cardtablerowdata > a[title="Pendulum Scale ' + i + ' Monster Cards"]').text().trim();
 				};
+				
+				if(level == ""){
+					level = $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Level"]) > td.cardtablerowdata > a[title="Level ? Monster Cards"]').text().trim();
+				}
 				
 				$(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Link Arrow"]) > td.cardtablerowdata > a:has(img)').replaceWith('');
 				var link_markers = $(this).find('tr.cardtablerow:has(th.cardtablerowheader > a[title="Link Arrow"]) > td.cardtablerowdata').text().trim();
@@ -90,8 +94,8 @@ db.serialize(function(){
 				stmt.run(card_effect_types, 700, row.id);*/
 				
 				
-				var stmt = db.prepare("INSERT into cartas(id, english_name, jap_name, card_type, attribute, type, level, rank, pendulum_scale, property, link_markers, atk_def_link, set_card, card_effect_types) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-				stmt.run(row.id, row.name, jap_name, card_type, attribute, type, level, rank, pendulum_scale, property, link_markers, atk_def_link, set_card, card_effect_types);
+				var stmt = db.prepare("INSERT into cartas(id, english_name, jap_name, card_type, attribute, type, level, rank, pendulum_scale, property, link_markers, atk_def_link, set_card, card_effect_types, passcode) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				stmt.run(row.id, row.name, jap_name, card_type, attribute, type, level, rank, pendulum_scale, property, link_markers, atk_def_link, set_card, card_effect_types, passcode);
 				
 				
 			});
